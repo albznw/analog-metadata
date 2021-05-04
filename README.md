@@ -55,3 +55,4 @@ the pictures within that folder has been processed.
 
 # Remarks
 * The script only process `jpeg`, `jpg` and `png` files
+* The script actually only fixes the timestamp so that the picture appear in the correct order in programs like Google Photos, it does not know in which order they were taken if the pictuers are not sorted beforehand. Hopefully, the lab developing your photos have done so and scanned them in the correct order. 
