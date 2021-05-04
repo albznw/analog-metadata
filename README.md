@@ -28,7 +28,7 @@ Basically, where each roll have it's own folder containing all the pictures form
 that roll.
 
 The `roll.json` file should contain the information about that particular roll.
-```json
+```
 {
     "camera_make": "Konica",    // The camera make
     "camera_model": "FC-1",     // The camera model
