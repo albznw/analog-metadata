@@ -17,22 +17,32 @@ for root, directories, files in os.walk(os.getcwd()):
 
     # If the folder contains a "roll.json" file then it should be processed
     roll_path = os.path.join(root, "roll.json")
+    if not os.path.exists(roll_path):
+        # Jump over this folder of the json roll information file does not exist
+        continue
+
     try:
         with open(roll_path, "r") as roll_f:
             roll_information = json.load(roll_f)
-    except:
-        # Jump over this folder
+    except Exception as e:
+        print(f"Could not open the json file in folder {roll_path}")
+        print(e)
         continue
-
+    
     # Check if the roll is already processed
     if roll_information.get("date_processed"):
-        print(f'Old roll {roll_information["start_date"]} - {roll_information["end_date"]}')
+        print(f'Old roll (already processed) {roll_information["start_date"]} - {roll_information["end_date"]}')
         continue
 
     # New roll equals new timestamps
-    print(f'New roll: {roll_information["start_date"]} - {roll_information["end_date"]}')
-    start_date = datetime.datetime.strptime(roll_information["start_date"], "%d.%m.%Y")
-    end_date = datetime.datetime.strptime(roll_information["end_date"], "%d.%m.%Y")
+    print(f'New roll: {roll_information["start_date"]} - {roll_information["end_date"]} on path: "{roll_path}"')
+
+    roll_number = roll_information["roll_no"]
+    try:
+        start_date = datetime.datetime.strptime(roll_information["start_date"], "%d.%m.%Y")
+        end_date = datetime.datetime.strptime(roll_information["end_date"], "%d.%m.%Y")
+    except:
+        print(f"An error occured processing the timestamps for roll number {roll_number} ({roll_path})")
     timestamp = end_date
 
     photo_no = 0
@@ -49,9 +59,12 @@ for root, directories, files in os.walk(os.getcwd()):
 
             if roll_information:
                 # Add roll information too if available
-                exif_dict["0th"][piexif.ImageIFD.Make] = roll_information["camera_make"]
-                exif_dict["0th"][piexif.ImageIFD.Model] = roll_information["camera_model"]
-                exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings] = int(roll_information["film_speed"])
+                if roll_information["camera_make"]:
+                    exif_dict["0th"][piexif.ImageIFD.Make] = roll_information["camera_make"]
+                if roll_information["camera_model"]:
+                    exif_dict["0th"][piexif.ImageIFD.Model] = roll_information["camera_model"]
+                if roll_information["film_speed"]:
+                    exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings] = int(roll_information["film_speed"])
 
                 exif_dict["Exif"][piexif.ExifIFD.UserComment] = \
                     f'ASCII0x0{roll_information["film_stock"]} {roll_information["film_speed"]} {roll_information["film_format"]}mm'\
@@ -79,7 +92,7 @@ for root, directories, files in os.walk(os.getcwd()):
 
     # Update roll information
     with open(roll_path, "w") as roll_f:
-        json.dump(roll_information, roll_f)
+        json.dump(roll_information, roll_f, ensure_ascii=False, indent=4)
 
     # Rename folder
     os.rename(
