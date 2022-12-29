@@ -3,7 +3,6 @@ import json
 import os
 import re
 import datetime
-import time
 import piexif
 
 print("Run this program in order to fix the timestamps after they have been scanned by OdenLab")
@@ -38,6 +37,7 @@ for root, directories, files in os.walk(os.getcwd()):
     print(f'New roll: {roll_information["start_date"]} - {roll_information["end_date"]} on path: "{roll_path}"')
 
     roll_number = roll_information["roll_no"]
+    
     try:
         start_date = datetime.datetime.strptime(roll_information["start_date"], "%d.%m.%Y")
         end_date = datetime.datetime.strptime(roll_information["end_date"], "%d.%m.%Y")
@@ -45,8 +45,19 @@ for root, directories, files in os.walk(os.getcwd()):
         print(f"An error occured processing the timestamps for roll number {roll_number} ({roll_path})")
     timestamp = end_date
 
-    photo_no = 0
+    # Check if pictures are in reversed order
+    try:
+        reverse_order_tmp = roll_information["reverse_order"]
+        reverse_order = True if reverse_order_tmp == "true" else False
+    except:
+        reverse_order = False
 
+    # Sort (and maybe reverse) the files before processing
+    files.sort()
+    if reverse_order:
+        files.reverse()
+
+    photo_no = 0
     for file_name in files:
         if re.match(r".*((\.jpg)|(\.jpeg)|(\.JPG)|(\.JPEG))", file_name):
             # Process photo
