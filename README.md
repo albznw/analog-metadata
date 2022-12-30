@@ -30,14 +30,17 @@ that roll.
 The `roll.json` file should contain the information about that particular roll.
 ```
 {
+    "roll_no": "0",             // Keep track of your rolls
     "camera_make": "Konica",    // The camera make
     "camera_model": "FC-1",     // The camera model
     "film_speed": "200",        // The film speed
     "film_stock": "Kodak Gold", // The film stock
     "film_format": "35",        // The format of the film
+    "comments": "",             // Add comments to your pictures
     "start_date": "01.07.2019", // The date you took the first picture
     "end_date": "05.08.2019",   // The date you took the last picture
     "date_developed": "31.08.2019" // The date the roll got developed
+    "reverse_order": "false"    // Set to true if the scanned photos are in reverse order
 }
 ```
 
